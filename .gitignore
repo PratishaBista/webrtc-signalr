@@ -1,0 +1,41 @@
+# ASP.NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+*.vs/
+*.vscode/
+project.lock.json
+project.fragment.lock.json
+
+# dotnet publish outputs
+**/publish/
+**/wwwroot/dist/
+**/wwwroot/node_modules/
+
+# secrets & config
+appsettings.Development.json
+appsettings.*.json
+
+# Angular
+/client/node_modules/
+/client/dist/
+/client/.angular/cache/
+/client/.angular/config.json
+/client/package-lock.json
+
+/wwwroot/dist/
+/wwwroot/node_modules/
+
+# IDE & OS-generated
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*.bak
+
+# personal notes
+misc/
