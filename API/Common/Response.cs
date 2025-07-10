@@ -12,7 +12,7 @@ public class Response<T>
     public string? Message { get; set; }
 
 
-    public Response(bool isSuccess, T data, string? error = null, string? message = null)
+    public Response(bool isSuccess, T data, string? error, string? message)
     {
         IsSuccess = isSuccess;
         Data = data;
@@ -20,6 +20,6 @@ public class Response<T>
         Message = message;
     }
 
-    public static Response<T> Success(T data, string? message = null) => new(true, data, null, message);
+    public static Response<T> Success(T data, string? message = " ") => new(true, data, null, message);
     public static Response<T> Failure(string error) => new(false, default!, error, null);
 }

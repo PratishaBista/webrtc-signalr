@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Endpoints;
 
-static class AccountEndpoint
+public static class AccountEndpoint
 {
     public static RouteGroupBuilder MapAccountEndpoint(this WebApplication app)
     {
@@ -14,7 +14,7 @@ static class AccountEndpoint
 
         group.MapPost("/register", async (HttpContext httpContext, UserManager<AppUser>
         userManager, [FromForm] string fullname, [FromForm] string email,
-        [FromForm] string password) =>
+        [FromForm] string password, [FromForm] string username) =>
         {
             var userFromDb = await userManager.FindByEmailAsync(email);
             if (userFromDb is not null)
@@ -26,20 +26,19 @@ static class AccountEndpoint
             {
                 Email = email,
                 FullName = fullname,
+                UserName = username,
             };
 
             var result = await userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
-                var errorMessage = result.Errors.Select(x => x.Description).FirstOrDefault() ?? "An unknown error occurred.";
-                return Results.BadRequest(Response<string>.Failure(errorMessage));
+                return Results.BadRequest(Response<string>.Failure(result.Errors.Select(x => x.Description).FirstOrDefault()!));
             }
 
             return Results.Ok(Response<string>.Success("", "User created successfully."));
-        });
+        }).DisableAntiforgery();
 
         return group;
     }
-
 }

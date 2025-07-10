@@ -4,39 +4,42 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
 using API.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
-var JwtSettings = builder.Configuration.GetSection("JwtSetttings");
+
+var jwtSecretKey = builder.Configuration["JWTSettings:SecretKey"];
+if (string.IsNullOrEmpty(jwtSecretKey))
+{
+    throw new InvalidOperationException("JWT Secret Key is not configured in appsettings.json or environment variables");
+}
+
 builder.Services.AddDbContext<AppDbContext>(x => x.UseSqlite("Data Source=chat.db"));
 
 builder.Services.AddIdentityCore<AppUser>()
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-        (JwtSettings.GetSection("SecretKey").Value!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
         ValidateIssuer = false,
         ValidateAudience = false,
     };
-
 });
+
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
@@ -53,5 +56,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAccountEndpoint();
-
+app.MapGet("/", () => "API is running!").AllowAnonymous();
 app.Run();
