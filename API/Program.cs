@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using API.Endpoints;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ builder.Services.AddDbContext<AppDbContext>(x => x.UseSqlite("Data Source=chat.d
 builder.Services.AddIdentityCore<AppUser>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+// register the TokenService (class that generates JWT tokens)
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddAuthentication(options =>
 {
