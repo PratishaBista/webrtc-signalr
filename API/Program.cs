@@ -7,8 +7,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using API.Endpoints;
 using API.Services;
+using API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(
+    options => options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    }
+
+    )
+);
 
 var jwtSecretKey = builder.Configuration["JWTSettings:SecretKey"];
 if (string.IsNullOrEmpty(jwtSecretKey))
@@ -42,9 +52,26 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = false,
         ValidateAudience = false,
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+          {
+              var accessToken = context.Request.Query["access_token"];
+              var path = context.HttpContext.Request.Path;
+              if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+              {
+                  context.Token = accessToken;
+              }
+              return Task.CompletedTask;
+          }
+
+    };
+
 });
 
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -55,10 +82,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200", "https://localhost:4200"));
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
+app.MapHub<ChatHub>("hubs/chat");
 
 app.MapAccountEndpoint();
 app.MapGet("/", () => "API is running!").AllowAnonymous();
