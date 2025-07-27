@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs';
 })
 export class AuthServiceService {
   private baseUrl = 'http://localhost:5000/api/account';
-  httpClient = inject(HttpClient);
+  private httpClient = inject(HttpClient);
 
   register(data: FormData): Observable<ApiResponse<string>> {
     return this.httpClient.post<ApiResponse<string>>(`${this.baseUrl}/register`, data).pipe(tap((response) => {
