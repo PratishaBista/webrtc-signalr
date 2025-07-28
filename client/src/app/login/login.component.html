@@ -1,6 +1,6 @@
 <form
   #userForm="ngForm"
-  (ngSubmit)="register()"
+  (ngSubmit)="login()"
   class="md:flex justify-center px-20 bg-white gap-10"
 >
   <div
@@ -16,15 +16,9 @@
   <div
     class="bg-white my-10 rounded w-1/4 flex flex-col gap-3 shadow-sm drop-shadow-md"
   >
-    <div class="text-center">
-      <div class="flex justify-center">
-        <img
-          [src]="profilePicture"
-          class="rounded-full bg-blue-800 h-24 w-24 object-cover"
-          alt="User Profile Picture"
-        />
-      </div>
-      <div class="text-2xl my-2 font-medium">Register</div>
+    <div class="text-center mt-10">
+      <mat-icon>person</mat-icon>
+      <div class="text-2xl my-2 font-medium">Login</div>
     </div>
     <div class="w-full">
       <mat-form-field class="w-full" appearance="fill">
@@ -41,34 +35,7 @@
         <mat-error> Email is required </mat-error>
         }
       </mat-form-field>
-      <mat-form-field class="w-full" appearance="fill">
-        <mat-label>Username</mat-label>
-        <input
-          matInput
-          name="username"
-          required
-          #userNameModel="ngModel"
-          placeholder="username"
-          [(ngModel)]="userName"
-        />
-        @if(userNameModel.errors?.['required']){
-        <mat-error> Username is required </mat-error>
-        }
-      </mat-form-field>
-      <mat-form-field class="w-full" apperance="fill">
-        <mat-label>Full name</mat-label>
-        <input
-          matInput
-          required
-          name="fullName"
-          placeholder="Full Name"
-          #fullNameModel="ngModel"
-          [(ngModel)]="fullName"
-        />
-        @if(fullNameModel.errors?.['required']){
-        <mat-error> Full name is required </mat-error>
-        }
-      </mat-form-field>
+
       <mat-form-field class="w-full" apperance="fill">
         <mat-label>Password</mat-label>
         <input
@@ -89,27 +56,13 @@
           hide() ? "visibility_off" : "visibility_on"
         }}</mat-icon>
       </mat-form-field>
-      <input
-        hidden
-        (change)="onFileSelected($event)"
-        type="file"
-        #pic
-        placeholder="Profile Image"
-      />
-      <button
-        (click)="pic.click()"
-        type="button"
-        class="w-full flex items-center gap-2 justify-center mb-5 bg-red-900 text-white rounded-md p-2"
-      >
-        <mat-icon>add_a_photo</mat-icon>
-        <span>Upload Profile Picture</span>
-      </button>
+
       <button
         type="submit"
         [disabled]="!userForm.valid"
         class="w-full mb-5 bg-blue-600 text-white rounded-md p-2 disabled:opacity-30"
       >
-        Register
+        Login
       </button>
     </div>
   </div>
